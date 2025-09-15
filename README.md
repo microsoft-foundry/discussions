@@ -20,7 +20,7 @@
 
 Chat with other developers and AI Engineers, attend live community sessions hosted by Azure product teams and get support from product experts.
 
-![Azure AI Discord](https://dcbadge.limes.pink/api/server/https://discord.gg/kzRShWzttr)
+[![Azure AI Discord](https://dcbadge.limes.pink/api/server/https://discord.gg/kzRShWzttr)](https://discord.gg/kzRShWzttr)
 
 ### [GitHub](https://aka.ms/community/gh-discussions)
 
