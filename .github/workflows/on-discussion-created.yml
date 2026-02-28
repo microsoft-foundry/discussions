@@ -43,3 +43,13 @@ jobs:
           AZURE_OPENAI_KEY: ${{ secrets.AZURE_OPENAI_KEY }}
         run: |
           python -c "from discussion_labeler import basic; basic.process_discussions()"
+      - name: Dispatch to foundry-docs
+        if: github.event_name == 'discussion'
+        env:
+          DISPATCH_TOKEN: ${{ secrets.FOUNDRY_DOCS_DISPATCH_TOKEN }}
+        run: |
+          curl -s -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $DISPATCH_TOKEN" \
+            https://api.github.com/repos/nicholasdbrady/foundry-docs/dispatches \
+            -d "{\"event_type\":\"community-discussion\",\"client_payload\":{\"number\":${{ github.event.discussion.number }},\"title\":$(echo '${{github.event.discussion.title }}' | python3 -c 'import json,sys; print(json.dumps(sys.stdin.read().strip()))'),\"url\":\"${{ github.event.discussion.html_url}}\"}}"
