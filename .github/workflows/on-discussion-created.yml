@@ -47,9 +47,17 @@ jobs:
         if: github.event_name == 'discussion'
         env:
           DISPATCH_TOKEN: ${{ secrets.FOUNDRY_DOCS_DISPATCH_TOKEN }}
+          DISCUSSION_NUMBER: ${{ github.event.discussion.number }}
+          DISCUSSION_TITLE: ${{ github.event.discussion.title }}
+          DISCUSSION_URL: ${{ github.event.discussion.html_url }}
         run: |
-          curl -s -X POST \
+          PAYLOAD=$(jq -n \
+            --arg title "$DISCUSSION_TITLE" \
+            --arg url "$DISCUSSION_URL" \
+            --argjson number "$DISCUSSION_NUMBER" \
+            '{event_type: "community-discussion", client_payload: {number: $number, title: $title, url: $url}}')
+          curl -fsS -X POST \
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer $DISPATCH_TOKEN" \
             https://api.github.com/repos/nicholasdbrady/foundry-docs/dispatches \
-            -d "{\"event_type\":\"community-discussion\",\"client_payload\":{\"number\":${{ github.event.discussion.number }},\"title\":$(echo '${{github.event.discussion.title }}' | python3 -c 'import json,sys; print(json.dumps(sys.stdin.read().strip()))'),\"url\":\"${{ github.event.discussion.html_url}}\"}}"
+            -d "$PAYLOAD"
